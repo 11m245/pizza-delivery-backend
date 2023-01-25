@@ -21,7 +21,8 @@ dotenv.config();
 
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import { auth } from "./middlewares/auth.js";
+import { auth, authAdmin } from "./middlewares/auth.js";
+import stockRouter from "./routes/stock.routes.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -300,10 +301,24 @@ app.get("/getUsername", auth, async function (request, response) {
   const { user_id } = await getUserFromToken(token);
   // console.log("gtUser Id is", user_id);
   const user = await getUserFromID(user_id);
-  console.log("1 gtUsername user", user);
+  // console.log("1 gtUsername user", user);
   if (user) {
     response.send({ message: "userfound", name: user.name });
   } else {
     response.status(400).send({ message: "Unauthorised user" });
   }
 });
+
+app.get("/verifyRole", async function (request, response) {
+  const { logintoken } = request.headers;
+  const { user_id } = await getUserFromToken(logintoken);
+  const tokendedUserFromDB = await getUserFromID(user_id);
+  if (tokendedUserFromDB) {
+    response.send({ message: "user exist", role: tokendedUserFromDB.role });
+  } else {
+    response.status(400).send({ message: "Unauthorised user" });
+  }
+});
+
+// app.use("/stock", authAdmin, stockRouter);
+app.use("/stock", stockRouter);

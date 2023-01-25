@@ -7,14 +7,6 @@ export async function addUser(data) {
     .insertOne(data);
 }
 
-// export async function getUserFromDB(data) {
-//   const { email } = data;
-//   return await client
-//     .db("pizzaDeliveryApp")
-//     .collection("users")
-//     .findOne({ email });
-// }
-
 export async function getUserFromDBbyEmail(data) {
   const { email } = data;
   return await client
@@ -22,14 +14,6 @@ export async function getUserFromDBbyEmail(data) {
     .collection("users")
     .findOne({ email: email.toLowerCase() });
 }
-
-// export async function getUserFromDBByUserName(data) {
-//   const { username } = data;
-//   return await client
-//     .db("pizzaDeliveryApp")
-//     .collection("users")
-//     .findOne({ username });
-// }
 
 export async function storeResetTokenInDB(data) {
   return await client
