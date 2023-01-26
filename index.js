@@ -22,7 +22,9 @@ dotenv.config();
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { auth, authAdmin } from "./middlewares/auth.js";
-import stockRouter from "./routes/stock.routes.js";
+import productsRouter from "./routes/products.route.js";
+import ordersRouter from "./routes/orders.route.js";
+import inventoryItemsRouter from "./routes/inventory.route.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -321,4 +323,6 @@ app.get("/verifyRole", async function (request, response) {
 });
 
 // app.use("/stock", authAdmin, stockRouter);
-app.use("/stock", stockRouter);
+app.use("/products", productsRouter);
+app.use("/inventoryItems", inventoryItemsRouter);
+app.use("/orders", ordersRouter);
