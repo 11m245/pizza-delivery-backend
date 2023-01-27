@@ -15,3 +15,10 @@ export async function UpdateOrderStatus(orderId, newStatus) {
     .collection("orders")
     .updateOne({ _id: ObjectId(orderId) }, { $push: { status: newStatus } });
 }
+
+export async function getOrderDetails(orderId) {
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .findOne({ _id: ObjectId(orderId) });
+}

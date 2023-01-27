@@ -6,7 +6,6 @@ import {
   getInventoryCategoryByName,
   getInventoryItemByName,
   getInventoryItemByNameAndCategory,
-  getProductInventoryRequirementById,
 } from "../services/inventory.service.js";
 import { getUserFromToken } from "../services/user.service.js";
 const router = express.Router();

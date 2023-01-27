@@ -47,9 +47,17 @@ export async function addProductInventoryItemsRequirement(data) {
     .insertOne({ ...data });
 }
 
-export async function getProductInventoryRequirementById(product_Id) {
+export async function updateExpenseItem(expenseData, orderId) {
+  const prev = await client
+    .db("pizzaDeliveryApp")
+    .collection("inventoryItems")
+    .findOne({ _id: ObjectId(expenseData.item_id) });
+  console.log("prev", prev);
   return await client
     .db("pizzaDeliveryApp")
-    .collection("productInventoryItemsRequirement")
-    .findOne({ product_Id: product_Id });
+    .collection("inventoryItems")
+    .updateOne(
+      { _id: ObjectId(expenseData.item_id) },
+      { $set: { stock: prev.stock - expenseData.qty } }
+    );
 }
