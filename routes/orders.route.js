@@ -12,13 +12,13 @@ import { getUserFromToken } from "../services/user.service.js";
 
 router.post("/new", async function (request, response) {
   const { logintoken } = request.headers;
-  // console.log("login token is", logintoken);
+  console.log("login token is", logintoken);
   const data = request.body;
-  // console.log("body data in add order is", data);
+  console.log("body data in add order is", data);
   const { user_id } = await getUserFromToken(logintoken);
-  // console.log("ordered user is", user_id);
-  const orderAmount1 = data.products.reduce((acc, cobj) => {
-    return acc + cobj.price * cobj.quantity;
+  console.log("ordered user is", user_id);
+  const orderAmount1 = data.reduce((acc, cobj) => {
+    return acc + cobj.price * cobj.qty;
   }, 0);
   const formattedData = {
     ...data,

@@ -4,6 +4,7 @@ import {
   addProductCategory,
   deleteProductById,
   editProductById,
+  getAllProducts,
   getProductById,
   getProductCategory,
   getProductFromNameOrCode,
@@ -72,6 +73,16 @@ router.post("/addProduct", async function (request, response) {
     };
     const result = await addProduct(formattedData);
     response.send(result);
+  }
+});
+
+router.get("/getAllProducts", async function (request, response) {
+  const productsFromDB = await getAllProducts();
+  // console.log("itemFromDB is", itemFromDB);
+  if (productsFromDB?.length > 0) {
+    response.send({ message: "Products present", products: productsFromDB });
+  } else {
+    response.status(400).send({ message: "Products Not present" });
   }
 });
 
