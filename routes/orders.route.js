@@ -5,33 +5,89 @@ const router = express.Router();
 import {
   addOrder,
   getOrderDetails,
+  getTodayOrders,
   UpdateOrderStatus,
 } from "../services/orders.service.js";
+import { addOrderInPayments } from "../services/payments.service.js";
 import { getProductById } from "../services/products.service.js";
 import { getUserFromToken } from "../services/user.service.js";
 
+function checkOrder(data) {
+  const result = data.every((obj) => {
+    if (obj._id && obj.qty) {
+      return true;
+    }
+  });
+  // console.log("result is", result);
+  return result;
+}
+
 router.post("/new", async function (request, response) {
   const { logintoken } = request.headers;
-  console.log("login token is", logintoken);
+  // console.log("login token is", logintoken);
   const data = request.body;
-  console.log("body data in add order is", data);
-  const { user_id } = await getUserFromToken(logintoken);
-  console.log("ordered user is", user_id);
-  const orderAmount1 = data.reduce((acc, cobj) => {
-    return acc + cobj.price * cobj.qty;
-  }, 0);
-  const formattedData = {
-    ...data,
-    orderedBy: user_id,
-    createdAt: Date.now(),
-    orderAmount: orderAmount1,
-    status: [{ statusCode: "00", updatedAt: Date.now(), updatedBy: user_id }],
-  };
-  const result = await addOrder(formattedData);
-  if (result.insertedId) {
-    response.send({ message: "order placed", orderId: result.insertedId });
+  // console.log("body data in add order is", data);
+
+  if (data.length < 1) {
+    response.status(500).send({ message: "order not placed invalid " });
   } else {
-    response.status(500).send({ message: "order not placed" });
+    const isValidOrder = checkOrder(data);
+    if (isValidOrder) {
+      const { user_id } = await getUserFromToken(logintoken);
+      // console.log("ordered user is", user_id);
+      const productsData = await Promise.all(
+        data.map(async (dat) => {
+          const productData = await getProductById(dat._id);
+          // console.log("product data", productData);
+          // console.log("qty", dat.qty);
+          return { ...productData, qty: dat.qty };
+        })
+      );
+      // console.log("productsData", productsData);
+      const orderAmount1 = productsData.reduce((acc, cobj) => {
+        return acc + cobj.price * cobj.qty;
+      }, 0);
+      const formattedData = {
+        products: productsData,
+        orderedBy: user_id,
+        createdAt: Date.now(),
+        orderAmount: orderAmount1,
+        paymentMode: "cod",
+        status: [
+          { statusCode: "00", updatedAt: Date.now(), updatedBy: user_id },
+        ],
+      };
+      const result = await addOrder(formattedData);
+
+      if (result.insertedId) {
+        const result1 = await addOrderInPayments({
+          orderId: result.insertedId,
+          modeOfPayment: formattedData.paymentMode,
+          status: "pending",
+          transaction: "NIL",
+          amount: formattedData.orderAmount,
+          updatedBy: formattedData.orderedBy,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+        response.send({
+          message: "order placed",
+          orderId: result.insertedId,
+        });
+      }
+    } else {
+      response.status(500).send({ message: "order not placed invalid data" });
+    }
+  }
+});
+
+router.get("/getTodayOrders", async function (request, response) {
+  const result = await getTodayOrders();
+  console.log("today order res", result);
+  if (result.length > 0) {
+    response.send({ message: "orders fetched", orders: result });
+  } else {
+    response.status(400).send({ message: "no orders found" });
   }
 });
 

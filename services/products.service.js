@@ -57,6 +57,13 @@ export async function getProductById(id) {
     .findOne({ _id: ObjectId(id) });
 }
 
+export async function verifyProductIdinDB(data) {
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("products")
+    .findOne({ _id: ObjectId(id) });
+}
+
 export async function getAllProducts() {
   return await client
     .db("pizzaDeliveryApp")
