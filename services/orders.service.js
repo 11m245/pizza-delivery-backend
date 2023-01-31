@@ -9,7 +9,59 @@ export async function addOrder(data) {
     .insertOne(data);
 }
 
+export async function getOrdersStatus(order_Ids) {
+  console.log("runs get orders status", order_Ids);
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .find({ _id: { $in: order_Ids } })
+    .toArray();
+}
+
+export async function getTodayUserOrders(order_Ids) {
+  console.log("runs get orders status", order_Ids);
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "orderedBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $match: {
+          createdAt: {
+            $gte: Date.now() - 86400000,
+          },
+        },
+      },
+    ])
+    .toArray();
+}
+
 export async function UpdateOrderStatus(orderId, newStatus) {
+  if (newStatus.statusCode === "05") {
+    await client
+      .db("pizzaDeliveryApp")
+      .collection("orders")
+      .updateOne({ _id: ObjectId(orderId) }, { $set: { isCompleted: true } });
+  }
+  await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .updateOne(
+      { _id: ObjectId(orderId) },
+      {
+        $set: {
+          currentStatus: newStatus.statusCode,
+          statusUpdatedAt: Date.now(),
+        },
+      }
+    );
   return await client
     .db("pizzaDeliveryApp")
     .collection("orders")

@@ -15,6 +15,17 @@ export async function getUserFromDBbyEmail(data) {
     .findOne({ email: email.toLowerCase() });
 }
 
+export async function getUsersFromIds(userIds) {
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("users")
+    .find(
+      { _id: { $in: userIds } },
+      { projection: { password: 0, isActivated: 0, role: 0 } }
+    )
+    .toArray();
+}
+
 export async function storeResetTokenInDB(data) {
   return await client
     .db("pizzaDeliveryApp")

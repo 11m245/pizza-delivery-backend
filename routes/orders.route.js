@@ -1,11 +1,14 @@
 import express from "express";
+import { ObjectId } from "mongodb";
 import { updateExpenseItem } from "../services/inventory.service.js";
 
 const router = express.Router();
 import {
   addOrder,
   getOrderDetails,
+  getOrdersStatus,
   getTodayOrders,
+  getTodayUserOrders,
   UpdateOrderStatus,
 } from "../services/orders.service.js";
 import { addOrderInPayments } from "../services/payments.service.js";
@@ -51,7 +54,10 @@ router.post("/new", async function (request, response) {
         products: productsData,
         orderedBy: user_id,
         createdAt: Date.now(),
+        statusUpdatedAt: Date.now(),
         orderAmount: orderAmount1,
+        isCompleted: false,
+        currentStatus: "00",
         paymentMode: "cod",
         status: [
           { statusCode: "00", updatedAt: Date.now(), updatedBy: user_id },
@@ -90,6 +96,19 @@ router.get("/getTodayOrders", async function (request, response) {
     response.status(400).send({ message: "no orders found" });
   }
 });
+router.get("/getTodayUserOrders", async function (request, response) {
+  const result = await getTodayUserOrders();
+  console.log("today user order res", result);
+  if (result) {
+    if (result.length > 0) {
+      response.send({ message: "orders fetched", orders: result });
+    } else {
+      response.send({ message: "no orders fetched", orders: result });
+    }
+  } else {
+    response.status(400).send({ message: "invalid req no orders found" });
+  }
+});
 
 router.post("/updateStatus/:id", async function (request, response) {
   const { id } = request.params;
@@ -107,9 +126,7 @@ router.post("/updateStatus/:id", async function (request, response) {
     orderedProductsList.forEach(async function getProductInventoryRequirement(
       orderedProduct
     ) {
-      const { inventoryRequirement } = await getProductById(
-        orderedProduct.productId
-      );
+      const { inventoryRequirement } = await getProductById(orderedProduct._id);
       inventoryRequirement.forEach((itemExpense) => {
         const currentOrderItemExpense = {
           item_id: itemExpense.item_Id,
@@ -141,8 +158,31 @@ router.post("/updateStatus/:id", async function (request, response) {
     updatedBy: user_id,
   };
 
-  const result = await UpdateOrderStatus(orderId, newStatus);
-  response.send({ message: "order status updated", result });
+  if (["00", "01", "02", "03", "04", "05"].includes(newStatus.statusCode)) {
+    const result = await UpdateOrderStatus(orderId, newStatus);
+    if (result.modifiedCount > 0) {
+      response.send({ message: "order status updated", result });
+    } else {
+      response
+        .status(500)
+        .send({ message: "order status not updated", result });
+    }
+  } else {
+    response.status(400).send({ message: "order status invalid" });
+  }
+});
+
+router.get("/getOrdersStatus", async function (request, response) {
+  const orderIds = request.headers.orderids;
+  const order_Ids = orderIds.split(",").map((id) => ObjectId(id));
+  // console.log("oreeee status", order_Ids);
+  const result = await getOrdersStatus(order_Ids);
+  console.log("today orders status", result);
+  if (result.length > 0) {
+    response.send({ message: "orders status fetched", orders: result });
+  } else {
+    response.status(400).send({ message: "no orders status found" });
+  }
 });
 
 // addItemInventoryRequirement

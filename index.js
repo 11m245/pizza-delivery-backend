@@ -1,6 +1,6 @@
 import express from "express";
 
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import {
   addUser,
   storeResetTokenInDB,
@@ -13,6 +13,7 @@ import {
   storeActivationToken,
   getUserFromActivationToken,
   activateUserInDB,
+  getUsersFromIds,
 } from "./services/user.service.js";
 import bcrypt from "bcrypt";
 import cors from "cors";
@@ -127,6 +128,20 @@ app.post("/signup", async function (request, response) {
   }
 });
 
+app.get("/getOrderedUsers", async function (request, response) {
+  const data = request.headers.userids;
+  const userIds = data.split(",");
+  // console.log("data is", userIds);
+  const user_Ids = userIds.map((id) => ObjectId(id));
+  const usersFromDB = await getUsersFromIds(user_Ids);
+  console.log("users from db", usersFromDB);
+
+  if (usersFromDB?.length > 0) {
+    response.send({ message: "ordered users found", users: usersFromDB });
+  } else {
+    response.send({ message: "ordered user not found" });
+  }
+});
 app.post("/activate", async function (request, response) {
   const activationTokenFromFront = request.headers.activationtoken;
   const tokenedUserFromDB = await getUserFromActivationToken(
