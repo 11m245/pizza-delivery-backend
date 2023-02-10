@@ -25,6 +25,7 @@ import nodemailer from "nodemailer";
 import { auth, authAdmin } from "./middlewares/auth.js";
 import productsRouter from "./routes/products.route.js";
 import ordersRouter from "./routes/orders.route.js";
+import productCategoriesRouter from "./routes/productCategories.route.js";
 import inventoryItemsRouter from "./routes/inventory.route.js";
 
 const app = express();
@@ -341,3 +342,4 @@ app.get("/verifyRole", async function (request, response) {
 app.use("/products", productsRouter);
 app.use("/inventoryItems", inventoryItemsRouter);
 app.use("/orders", ordersRouter);
+app.use("/productCategories", productCategoriesRouter);
