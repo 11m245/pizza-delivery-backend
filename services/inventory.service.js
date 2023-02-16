@@ -33,11 +33,46 @@ export async function getInventoryCategoryByName(name) {
     .findOne({ category: name });
 }
 
+export async function editInventoryCategory(data) {
+  const { oldCategoryName, newCategoryName } = data;
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("inventoryItemsCategory")
+    .updateOne(
+      { category: oldCategoryName },
+      { $set: { category: newCategoryName } }
+    );
+}
+
+export async function getAllInventoryItemCategories() {
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("inventoryItemsCategory")
+    .find({})
+    .toArray();
+}
+
+export async function getAllInventoryItems() {
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("inventoryItems")
+    .find({})
+    .toArray();
+}
 export async function addInventoryItemCategory(name) {
   return await client
     .db("pizzaDeliveryApp")
     .collection("inventoryItemsCategory")
     .insertOne({ category: name.toLowerCase() });
+}
+
+export async function editInventoryItem(objId, newData) {
+  // console.log("objid is", objId);
+  // console.log("new data is service", newData);
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("inventoryItems")
+    .updateOne({ _id: objId }, { $set: newData });
 }
 
 export async function addProductInventoryItemsRequirement(data) {
