@@ -94,7 +94,7 @@ router.get("/allCategories", async function (request, response) {
 
 router.get("/allItems", async function (request, response) {
   const result = await getAllInventoryItems();
-  console.log("all inventory items", result);
+  // console.log("all inventory items", result);
 
   if (result.length > 0) {
     response.send({

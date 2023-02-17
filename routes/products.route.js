@@ -68,11 +68,16 @@ router.post("/addProduct", async function (request, response) {
     const formattedData = {
       ...data,
       price: parseInt(data.price),
-      isVeg: data.isVeg.toLowerCase() === "yes" ? true : false,
-      rating: 0,
+      rating: parseInt(data.rating),
     };
     const result = await addProduct(formattedData);
-    response.send(result);
+    if (result) {
+      response.send({ message: "added new product", payload: result });
+    } else {
+      response
+        .status(400)
+        .send({ message: "cant add new product", payload: result });
+    }
   }
 });
 
