@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { client } from "../index.js";
 
 export async function addOrder(data) {
-  console.log("runs add db order comm", data);
+  // console.log("runs add db order comm", data);
   return await client
     .db("pizzaDeliveryApp")
     .collection("orders")
@@ -18,8 +18,8 @@ export async function getOrdersStatus(order_Ids) {
     .toArray();
 }
 
-export async function getTodayUserOrders(order_Ids) {
-  console.log("runs get orders status", order_Ids);
+export async function getTodayUserOrders() {
+  console.log("runs get today user orders");
   return await client
     .db("pizzaDeliveryApp")
     .collection("orders")
@@ -37,6 +37,30 @@ export async function getTodayUserOrders(order_Ids) {
           createdAt: {
             $gte: Date.now() - 86400000,
           },
+        },
+      },
+    ])
+    .toArray();
+}
+
+export async function getAllOrders() {
+  console.log("runs get all orders");
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "orderedBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+
+      {
+        $sort: {
+          createdAt: -1,
         },
       },
     ])

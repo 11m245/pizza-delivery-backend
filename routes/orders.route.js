@@ -5,6 +5,7 @@ import { updateExpenseItem } from "../services/inventory.service.js";
 const router = express.Router();
 import {
   addOrder,
+  getAllOrders,
   getOrderDetails,
   getOrdersStatus,
   getTodayOrders,
@@ -87,11 +88,20 @@ router.post("/new", async function (request, response) {
   }
 });
 
-router.get("/getTodayOrders", async function (request, response) {
-  const result = await getTodayOrders();
-  console.log("today order res", result);
+// router.get("/getTodayOrders", async function (request, response) {
+//   const result = await getTodayOrders();
+//   console.log("today order res", result);
+//   if (result.length > 0) {
+//     response.send({ message: "orders fetched", orders: result });
+//   } else {
+//     response.status(400).send({ message: "no orders found" });
+//   }
+// });
+router.get("/getAllOrders", async function (request, response) {
+  const result = await getAllOrders();
+  console.log("all order res", result);
   if (result.length > 0) {
-    response.send({ message: "orders fetched", orders: result });
+    response.send({ message: "all orders fetched", orders: result });
   } else {
     response.status(400).send({ message: "no orders found" });
   }
@@ -130,7 +140,7 @@ router.post("/updateStatus/:id", async function (request, response) {
       inventoryRequirement.forEach((itemExpense) => {
         const currentOrderItemExpense = {
           item_id: itemExpense.item_Id,
-          qty: itemExpense.qty * orderedProduct.quantity,
+          qty: parseFloat(itemExpense.qty) * parseFloat(orderedProduct.qty),
         };
         productsInventoryExpenseList.push(currentOrderItemExpense);
       });

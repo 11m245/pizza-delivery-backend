@@ -93,6 +93,6 @@ export async function updateExpenseItem(expenseData, orderId) {
     .collection("inventoryItems")
     .updateOne(
       { _id: ObjectId(expenseData.item_id) },
-      { $set: { stock: prev.stock - expenseData.qty } }
+      { $set: { stock: parseFloat(prev.stock) - parseFloat(expenseData.qty) } }
     );
 }

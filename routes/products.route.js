@@ -47,7 +47,7 @@ router.get("/category", async function (request, response) {
 async function findProductAlreadyExist(data) {
   const { name, productCode } = data;
   const result = await getProductFromNameOrCode(name, productCode);
-  console.log("find product Result is", result);
+  // console.log("find product Result is", result);
   if (result) {
     return result;
   } else {
@@ -56,9 +56,9 @@ async function findProductAlreadyExist(data) {
 }
 router.post("/addProduct", async function (request, response) {
   const data = request.body;
-  console.log("body data in add product is", data);
+  // console.log("body data in add product is", data);
   const isAlreadyExist = await findProductAlreadyExist(data);
-  console.log("is exist is", isAlreadyExist);
+  // console.log("is exist is", isAlreadyExist);
   if (isAlreadyExist) {
     response.status(400).send({
       message: "Product Already Exist",
@@ -118,7 +118,7 @@ router.put("/editProduct/:id", async function (request, response) {
 
 router.delete("/deleteProduct/:id", async function (request, response) {
   const { id } = request.params;
-  console.log("delete id  is", id);
+  // console.log("delete id  is", id);
   const productFromDB = await getProductById(id);
   if (productFromDB) {
     const res = await deleteProductById(id);
