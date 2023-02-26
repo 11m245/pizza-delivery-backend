@@ -81,7 +81,7 @@ async function sendActivationMail(userActivationInfo, activationtoken) {
   // send mail with defined transporter object
   const url = `${process.env.API_CLIENT}/activate/${activationtoken}`;
   let info = await transporter.sendMail({
-    from: '"URL Shortener 👻" <sivaraj2siva@gmail.com>', // sender address
+    from: '"Pizza Order App 👻" <sivaraj2siva@gmail.com>', // sender address
     to: `${userActivationInfo.email}`, // list of receivers
     subject: "Activation Link for Pizza Delivery App", // Subject line
     text: `Hi ${userActivationInfo.name}, as you have requested to register, this is the link please click and activate your account. ${url}`, // plain text body
@@ -226,9 +226,9 @@ async function mailer(userResetInfo) {
   // send mail with defined transporter object
   const url = `${process.env.API_CLIENT}/change-password/${userResetInfo.resetToken}`;
   let info = await transporter.sendMail({
-    from: '"URL Shortener 👻" <sivaraj2siva@gmail.com>', // sender address
+    from: '"Pizza Order App 👻" <sivaraj2siva@gmail.com>', // sender address
     to: `${userResetInfo.email}`, // list of receivers
-    subject: "Password Reset for url shortener App", // Subject line
+    subject: "Password Reset for pizza Order App", // Subject line
     text: `Hi ${userResetInfo.name}, as you have requested to reset Password, this is the link please click and reset. ${url}`, // plain text body
     html: `<div > <p>Hi ${userResetInfo.name} as you have requested to reset Password, this is the link please click and reset.  ${url} </p> <b>forgot? click this link to reset</b> <a href=${url} target="_blank">Reset Password</a></div>`, // html body
   });
