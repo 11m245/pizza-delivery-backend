@@ -100,7 +100,7 @@ router.post("/new", async function (request, response) {
 // });
 router.get("/getAllOrders", async function (request, response) {
   const result = await getAllOrders();
-  console.log("all order res", result);
+  // console.log("all order res", result);
   if (result.length > 0) {
     response.send({ message: "all orders fetched", orders: result });
   } else {
@@ -109,7 +109,7 @@ router.get("/getAllOrders", async function (request, response) {
 });
 router.get("/getTodayUserOrders", async function (request, response) {
   const result = await getTodayUserOrders();
-  console.log("today user order res", result);
+  // console.log("today user order res", result);
   if (result) {
     if (result.length > 0) {
       response.send({ message: "orders fetched", orders: result });
@@ -132,7 +132,7 @@ router.post("/updateStatus/:id", async function (request, response) {
   if (id === "03") {
     const orderDetail = await getOrderDetails(orderId);
     const { products: orderedProductsList } = orderDetail;
-    console.log("orderedProductsList", orderedProductsList);
+    // console.log("orderedProductsList", orderedProductsList);
     let productsInventoryExpenseList = [];
     orderedProductsList.forEach(async function getProductInventoryRequirement(
       orderedProduct
@@ -145,10 +145,10 @@ router.post("/updateStatus/:id", async function (request, response) {
         };
         productsInventoryExpenseList.push(currentOrderItemExpense);
       });
-      console.log(
-        "111 productsInventoryExpenseList",
-        productsInventoryExpenseList
-      );
+      // console.log(
+      //   "111 productsInventoryExpenseList",
+      //   productsInventoryExpenseList
+      // );
       await updateInventoryStock(productsInventoryExpenseList, orderId);
 
       async function updateInventoryStock(
@@ -188,7 +188,7 @@ router.get("/getOrdersStatus", async function (request, response) {
   const order_Ids = orderIds.split(",").map((id) => ObjectId(id));
   // console.log("oreeee status", order_Ids);
   const result = await getOrdersStatus(order_Ids);
-  console.log("today orders status", result);
+  // console.log("today orders status", result);
   if (result.length > 0) {
     response.send({ message: "orders status fetched", orders: result });
   } else {
@@ -198,10 +198,10 @@ router.get("/getOrdersStatus", async function (request, response) {
 
 router.get("/getUserOrders", async function (request, response) {
   const token = request.headers.logintoken;
-  console.log("login token", token);
+  // console.log("login token", token);
   const { user_id } = await getUserFromToken(token);
   const result = await getUserOrders(user_id);
-  console.log(" user orders", result);
+  // console.log(" user orders", result);
   if (result.length > 0) {
     response.send({ message: "all orders fetched", orders: result });
   } else {

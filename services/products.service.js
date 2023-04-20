@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { client } from "../index.js";
 
 export async function addProductCategory(data) {
-  console.log("runs add db com", data);
+  // console.log("runs add db com", data);
   return await client
     .db("pizzaDeliveryApp")
     .collection("productsCategory")

@@ -22,7 +22,7 @@ async function checkItemAlreadyExist(data) {
 router.post("/new", async function (request, response) {
   const { logintoken } = request.headers;
   const data = request.body;
-  console.log("data it item add", data);
+  // console.log("data it item add", data);
 
   const { user_id } = await getUserFromToken(logintoken);
   //   console.log("trying user is", user_id);
@@ -60,7 +60,7 @@ async function findAlreadyItemCategoryExist(currentCategory) {
 
 router.post("/addCategory", async function (request, response) {
   const data = request.body;
-  console.log("add category node body data", data);
+  // console.log("add category node body data", data);
   const isAlreadyExist = await findAlreadyItemCategoryExist(data.category);
   // console.log("is exist is", isAlreadyExist);
   if (isAlreadyExist) {
@@ -78,7 +78,7 @@ router.post("/addCategory", async function (request, response) {
 
 router.get("/allCategories", async function (request, response) {
   const result = await getAllInventoryItemCategories();
-  console.log("all inventory item categories", result);
+  // console.log("all inventory item categories", result);
 
   if (result.length > 0) {
     response.send({
@@ -161,7 +161,7 @@ router.post(
     const data = request.body;
     const isAlreadyExist =
       await findAlreadyProductInventoryItemsRequirementExist(data);
-    console.log("is exist is", isAlreadyExist);
+    // console.log("is exist is", isAlreadyExist);
     if (isAlreadyExist) {
       response
         .status(400)

@@ -11,7 +11,7 @@ export async function addInventoryItem(data) {
 
 export async function getInventoryItemByName(data) {
   const { name } = data;
-  console.log("runs get Inventory Item", name);
+  // console.log("runs get Inventory Item", name);
   return await client
     .db("pizzaDeliveryApp")
     .collection("inventoryItems")
@@ -19,7 +19,7 @@ export async function getInventoryItemByName(data) {
 }
 export async function getInventoryItemByNameAndCategory(data) {
   const { name, category } = data;
-  console.log("runs get Inventory Item", name, category);
+  // console.log("runs get Inventory Item", name, category);
   return await client
     .db("pizzaDeliveryApp")
     .collection("inventoryItems")
@@ -87,7 +87,7 @@ export async function updateExpenseItem(expenseData, orderId) {
     .db("pizzaDeliveryApp")
     .collection("inventoryItems")
     .findOne({ _id: ObjectId(expenseData.item_id) });
-  console.log("prev", prev);
+  // console.log("prev", prev);
   return await client
     .db("pizzaDeliveryApp")
     .collection("inventoryItems")
