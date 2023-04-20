@@ -10,6 +10,7 @@ import {
   getOrdersStatus,
   getTodayOrders,
   getTodayUserOrders,
+  getUserOrders,
   UpdateOrderStatus,
 } from "../services/orders.service.js";
 import { addOrderInPayments } from "../services/payments.service.js";
@@ -195,5 +196,16 @@ router.get("/getOrdersStatus", async function (request, response) {
   }
 });
 
-// addItemInventoryRequirement
+router.get("/getUserOrders", async function (request, response) {
+  const token = request.headers.logintoken;
+  console.log("login token", token);
+  const { user_id } = await getUserFromToken(token);
+  const result = await getUserOrders(user_id);
+  console.log(" user orders", result);
+  if (result.length > 0) {
+    response.send({ message: "all orders fetched", orders: result });
+  } else {
+    response.status(400).send({ message: "no orders found" });
+  }
+});
 export default router;

@@ -110,3 +110,36 @@ export async function getTodayOrders() {
     .find({ createdAt: { $gte: startDate } })
     .toArray();
 }
+
+// export async function getUserOrders(user_Id) {
+//   console.log("runs get all user orders");
+//   return await client
+//     .db("pizzaDeliveryApp")
+//     .collection("orders")
+//     .find({ orderedBy: user_Id })
+//     .toArray();
+// }
+export async function getUserOrders(user_Id) {
+  console.log("runs get all orders");
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .aggregate([
+      { $match: { orderedBy: user_Id } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "orderedBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ])
+    .toArray();
+}
