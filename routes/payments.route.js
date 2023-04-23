@@ -28,8 +28,7 @@ const router = express.Router();
 // Ensure the key is kept out of any version control system you might be using.
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
-const endpointSecret =
-  "whsec_fb1bea950dabeb2dab1a4041bab0d1446a13300b6e2c8242ab1581a7d46c0922";
+const endpointSecret = process.env.END_POINT_SECRET;
 
 router.post(
   "/webhook",
