@@ -32,7 +32,7 @@ import paymentsRouter from "./routes/payments.route.js";
 const app = express();
 const PORT = process.env.PORT;
 // app.use(express.json());
-app.use(cors({ origin: true }));
+app.use(cors({ origin: "*" }));
 //mongo connection
 
 const MONGO_URL = process.env.MONGO_URL;
