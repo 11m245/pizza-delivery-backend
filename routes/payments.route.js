@@ -40,11 +40,10 @@ router.post(
     let event;
 
     try {
-      event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      // console.log("web hook verified");
+      event = Stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+      console.log("web hook verified");
     } catch (err) {
       console.log("Webhook Error", err, request.headers);
-
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
