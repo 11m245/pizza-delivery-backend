@@ -5,11 +5,10 @@ import { updateExpenseItem } from "../services/inventory.service.js";
 const router = express.Router();
 import {
   addOrder,
-  getAllOrders,
+  getAllOrdersWithPayment,
   getOrderDetails,
   getOrdersStatus,
-  getTodayOrders,
-  getTodayUserOrders,
+  getTodayUserOrdersWithPayment,
   getUserOrders,
   UpdateOrderStatus,
 } from "../services/orders.service.js";
@@ -50,7 +49,7 @@ router.post("/new", async function (request, response) {
           return { ...productData, qty: dat.qty };
         })
       );
-      console.log("productsData for payment", productsData);
+      // console.log("productsData for payment", productsData);
       const paymentProductsData = productsData.map((productData) => {
         return {
           price_data: {
@@ -113,28 +112,31 @@ router.post("/new", async function (request, response) {
 //     response.status(400).send({ message: "no orders found" });
 //   }
 // });
-router.get("/getAllOrders", async function (request, response) {
-  const result = await getAllOrders();
-  // console.log("all order res", result);
+router.get("/getAllOrdersWithPayment", async function (request, response) {
+  const result = await getAllOrdersWithPayment();
+  // console.log("all order with payment res", result);
   if (result.length > 0) {
     response.send({ message: "all orders fetched", orders: result });
   } else {
     response.status(400).send({ message: "no orders found" });
   }
 });
-router.get("/getTodayUserOrders", async function (request, response) {
-  const result = await getTodayUserOrders();
-  // console.log("today user order res", result);
-  if (result) {
-    if (result.length > 0) {
-      response.send({ message: "orders fetched", orders: result });
+router.get(
+  "/getTodayUserOrdersWithPayment",
+  async function (request, response) {
+    const result = await getTodayUserOrdersWithPayment();
+    // console.log("today user order with payment res", result);
+    if (result) {
+      if (result.length > 0) {
+        response.send({ message: "orders fetched", orders: result });
+      } else {
+        response.send({ message: "no orders fetched", orders: result });
+      }
     } else {
-      response.send({ message: "no orders fetched", orders: result });
+      response.status(400).send({ message: "invalid req no orders found" });
     }
-  } else {
-    response.status(400).send({ message: "invalid req no orders found" });
   }
-});
+);
 
 router.post("/updateStatus/:id", async function (request, response) {
   const { id } = request.params;

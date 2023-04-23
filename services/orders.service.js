@@ -18,7 +18,7 @@ export async function getOrdersStatus(order_Ids) {
     .toArray();
 }
 
-export async function getTodayUserOrders() {
+export async function getTodayUserOrdersWithPayment() {
   // console.log("runs get today user orders");
   return await client
     .db("pizzaDeliveryApp")
@@ -32,6 +32,16 @@ export async function getTodayUserOrders() {
           as: "user",
         },
       },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "_id",
+          foreignField: "orderId",
+          as: "payment",
+        },
+      },
+      { $unwind: "$payment" },
       {
         $match: {
           createdAt: {
@@ -58,6 +68,40 @@ export async function getAllOrders() {
         },
       },
 
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ])
+    .toArray();
+}
+
+export async function getAllOrdersWithPayment() {
+  // console.log("runs get all orders");
+  return await client
+    .db("pizzaDeliveryApp")
+    .collection("orders")
+    .aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "orderedBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "_id",
+          foreignField: "orderId",
+          as: "payment",
+        },
+      },
+      { $unwind: "$payment" },
       {
         $sort: {
           createdAt: -1,
@@ -134,6 +178,16 @@ export async function getUserOrders(user_Id) {
           as: "user",
         },
       },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "_id",
+          foreignField: "orderId",
+          as: "payment",
+        },
+      },
+      { $unwind: "$payment" },
 
       {
         $sort: {

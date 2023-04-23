@@ -41,7 +41,7 @@ router.post(
 
     try {
       event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      console.log("web hook verified");
+      // console.log("web hook verified");
     } catch (err) {
       console.log("Webhook Error", err.message);
       response.status(400).send(`Webhook Error: ${err.message}`);
@@ -52,7 +52,7 @@ router.post(
     switch (event.type) {
       case "checkout.session.completed":
         const checkOutCompleted = event.data.object;
-        console.log("checkOutCompleted obj", checkOutCompleted);
+        // console.log("checkOutCompleted obj", checkOutCompleted);
         const {
           id: checkOutSessionId,
           amount_total: paidAmount,
@@ -102,7 +102,7 @@ router.post(
     let session;
     let userId;
     //   let formattedOrderData;
-    console.log("login token is", logintoken);
+    // console.log("login token is", logintoken);
     const data = request.body;
     // console.log("body data in checkout is", data);
 
@@ -113,7 +113,7 @@ router.post(
       if (isValidOrder) {
         const { user_id } = await getUserFromToken(logintoken);
         userId = user_id;
-        console.log("ordered user is", user_id);
+        // console.log("ordered user is", user_id);
         const productsData = await Promise.all(
           data.map(async (dat) => {
             const productData = await getProductById(dat._id);
@@ -122,7 +122,7 @@ router.post(
             return { ...productData, qty: dat.qty };
           })
         );
-        console.log("productsData for from DB", productsData);
+        // console.log("productsData for from DB", productsData);
 
         const paymentProductsData = productsData.map((productData) => {
           return {
@@ -183,11 +183,11 @@ router.post(
               // Set a success and cancel URL we will send customers to
               // These must be full URLs
               // In the next section we will setup CLIENT_URL
-              success_url: `${process.env.API_CLIENT}/success`,
-              cancel_url: `${process.env.API_CLIENT}/user`,
+              success_url: `${process.env.API_CLIENT}/user/payment/success`,
+              cancel_url: `${process.env.API_CLIENT}/user/payment/failed`,
             });
             // res.json({ url: session.url });
-            console.log("success session creation payment url", session);
+            // console.log("success session creation payment url", session);
           } else {
             response.send({
               message: "order not updated in DB",
@@ -201,7 +201,7 @@ router.post(
         } catch (error) {
           // If there is an error send it to the client
           // res.status(500).json({ error: e.message });
-          console.log("Payment Session Creation Error", error.message);
+          // console.log("Payment Session Creation Error", error.message);
           response.status(500).send({
             message: "Payment Session Creation Error",
             payload: { url: session.url },
