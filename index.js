@@ -32,11 +32,9 @@ import paymentsRouter from "./routes/payments.route.js";
 const app = express();
 const PORT = process.env.PORT;
 // app.use(express.json());
-app.use(
-  cors({
-    origin: "https://pizza-delivery-backend-qvo01lbh2-11m245.vercel.app/",
-  })
-);
+// app.use(cors());
+app.use(cors({ origin: process.env.API_CLIENT }));
+
 //mongo connection
 
 const MONGO_URL = process.env.MONGO_URL;
