@@ -54,7 +54,7 @@ router.post(
       switch (event.type) {
         case "checkout.session.completed":
           const checkOutCompleted = event.data.object;
-          // console.log("checkOutCompleted obj", checkOutCompleted);
+          console.log("checkOutCompleted obj", checkOutCompleted);
           const {
             id: checkOutSessionId,
             amount_total: paidAmount,
