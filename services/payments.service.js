@@ -20,11 +20,12 @@ export async function updateOrderPaymentStatus({
   paymentIntent,
 }) {
   try {
-    const client = new MongoClient(process.env.MONGO_URL);
-    client.connect();
+    const clienT = new MongoClient(process.env.MONGO_URL);
+    clienT.connect();
+    console.log("mongo connected by webhook trigger");
 
     console.log("update payment runss");
-    return await client
+    return await clienT
       .db("pizzaDeliveryApp")
       .collection("payments")
       .updateOne(
