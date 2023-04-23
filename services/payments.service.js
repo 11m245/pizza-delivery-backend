@@ -17,6 +17,7 @@ export async function updateOrderPaymentStatus({
   paymentStatus,
   paymentIntent,
 }) {
+  console.log("update payment runss");
   return await client
     .db("pizzaDeliveryApp")
     .collection("payments")
