@@ -17,6 +17,8 @@ import { addOrderInPayments } from "../services/payments.service.js";
 import { getProductById } from "../services/products.service.js";
 import { getUserFromToken } from "../services/user.service.js";
 
+//npm i stripe then.. setup Stripe
+
 function checkOrder(data) {
   const result = data.every((obj) => {
     if (obj._id && obj.qty) {
@@ -48,11 +50,24 @@ router.post("/new", async function (request, response) {
           return { ...productData, qty: dat.qty };
         })
       );
-      // console.log("productsData", productsData);
+      console.log("productsData for payment", productsData);
+      const paymentProductsData = productsData.map((productData) => {
+        return {
+          price_data: {
+            currency: "inr",
+            product_data: { name: productData.name },
+            unit_amount: productData.price * 100,
+          },
+          quantity: productData.qty,
+        };
+      });
+
+      await processPayment(paymentProductsData);
+
       const orderAmount1 = productsData.reduce((acc, cobj) => {
         return acc + cobj.price * cobj.qty;
       }, 0);
-      const formattedData = {
+      const formattedOrderData = {
         products: productsData,
         orderedBy: user_id,
         createdAt: Date.now(),
@@ -65,7 +80,7 @@ router.post("/new", async function (request, response) {
           { statusCode: "00", updatedAt: Date.now(), updatedBy: user_id },
         ],
       };
-      const result = await addOrder(formattedData);
+      const result = await addOrder(formattedOrderData);
 
       if (result.insertedId) {
         const result1 = await addOrderInPayments({

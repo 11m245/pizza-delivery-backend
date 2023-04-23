@@ -27,10 +27,11 @@ import productsRouter from "./routes/products.route.js";
 import ordersRouter from "./routes/orders.route.js";
 import productCategoriesRouter from "./routes/productCategories.route.js";
 import inventoryItemsRouter from "./routes/inventory.route.js";
+import paymentsRouter from "./routes/payments.route.js";
 
 const app = express();
 const PORT = process.env.PORT;
-app.use(express.json());
+// app.use(express.json());
 app.use(cors());
 //mongo connection
 
@@ -90,7 +91,7 @@ async function sendActivationMail(userActivationInfo, activationtoken) {
   console.log("Message sent: %s", info.messageId);
 }
 // sendActivationMail().catch(console.error); //function call
-app.post("/signup", async function (request, response) {
+app.post("/signup", express.json(), async function (request, response) {
   const data = request.body;
   const userfromDB = await getUserFromDBbyEmail(data);
   if (userfromDB) {
@@ -143,7 +144,7 @@ app.get("/getOrderedUsers", async function (request, response) {
     response.send({ message: "ordered user not found" });
   }
 });
-app.post("/activate", async function (request, response) {
+app.post("/activate", express.json(), async function (request, response) {
   const activationTokenFromFront = request.headers.activationtoken;
   const tokenedUserFromDB = await getUserFromActivationToken(
     activationTokenFromFront
@@ -166,7 +167,7 @@ app.post("/activate", async function (request, response) {
   }
 });
 
-app.post("/login", async function (request, response) {
+app.post("/login", express.json(), async function (request, response) {
   const data = request.body;
   const userfromDB = await getUserFromDBbyEmail(data);
   if (userfromDB && userfromDB?.isActivated === true) {
@@ -194,19 +195,23 @@ app.post("/login", async function (request, response) {
   }
 });
 
-app.post("/forgot-password", async function (request, response) {
-  const data = request.body;
-  const userfromDB = await getUserFromDBbyEmail(data);
-  if (userfromDB) {
-    response
-      .status(200)
-      .send({ message: "Click on Reset Password to send an email" });
-  } else {
-    response
-      .status(400)
-      .send({ message: "Invalid Credentials. try registration first" });
+app.post(
+  "/forgot-password",
+  express.json(),
+  async function (request, response) {
+    const data = request.body;
+    const userfromDB = await getUserFromDBbyEmail(data);
+    if (userfromDB) {
+      response
+        .status(200)
+        .send({ message: "Click on Reset Password to send an email" });
+    } else {
+      response
+        .status(400)
+        .send({ message: "Invalid Credentials. try registration first" });
+    }
   }
-});
+);
 
 //node mailer
 
@@ -244,7 +249,7 @@ async function generateToken(userfromDB) {
   );
   return token;
 }
-app.post("/sendResetLink", async function (request, response) {
+app.post("/sendResetLink", express.json(), async function (request, response) {
   const data = request.body;
   const userfromDB = await getUserFromDBbyEmail(data);
   if (userfromDB) {
@@ -286,32 +291,36 @@ app.get("/change-password", async function (request, response) {
   }
 });
 
-app.post("/change-password", async function (request, response) {
-  const resetTokenFromFront = request.headers.resettoken;
-  const values = request.body;
-  // console.log("resetTokenFromFront", resetTokenFromFront);
-  // console.log("values from front", values);
-  const tokendedUserFromDB = await getUserFromResetToken(resetTokenFromFront);
-  // console.log("forgotUserfromDB", tokendedUserFromDB);
-  const tokenedUser = await getUserFromID(tokendedUserFromDB.user_id);
-  // const isUserAndTokenVerified = verfiyUserAndToken(values,tokenedUser);
-  if (tokenedUser.email === values.email) {
-    // console.log("request valid");
-    if (values.password === values.cpassword) {
-      const hashedNewPassword = await generateHashedPassword(values.password);
-      await updatePasswordInDB(tokenedUser.email, hashedNewPassword);
-      response.send({
-        message: "Password Change Success",
-      });
+app.post(
+  "/change-password",
+  express.json(),
+  async function (request, response) {
+    const resetTokenFromFront = request.headers.resettoken;
+    const values = request.body;
+    // console.log("resetTokenFromFront", resetTokenFromFront);
+    // console.log("values from front", values);
+    const tokendedUserFromDB = await getUserFromResetToken(resetTokenFromFront);
+    // console.log("forgotUserfromDB", tokendedUserFromDB);
+    const tokenedUser = await getUserFromID(tokendedUserFromDB.user_id);
+    // const isUserAndTokenVerified = verfiyUserAndToken(values,tokenedUser);
+    if (tokenedUser.email === values.email) {
+      // console.log("request valid");
+      if (values.password === values.cpassword) {
+        const hashedNewPassword = await generateHashedPassword(values.password);
+        await updatePasswordInDB(tokenedUser.email, hashedNewPassword);
+        response.send({
+          message: "Password Change Success",
+        });
+      } else {
+        response.status(400).send({
+          message: "Password and confirm password should be same",
+        });
+      }
     } else {
-      response.status(400).send({
-        message: "Password and confirm password should be same",
-      });
+      response.status(400).send({ message: "Unauthorised usage" });
     }
-  } else {
-    response.status(400).send({ message: "Unauthorised usage" });
   }
-});
+);
 
 app.get("/getUsername", auth, async function (request, response) {
   const token = request.headers.logintoken;
@@ -339,7 +348,8 @@ app.get("/verifyRole", async function (request, response) {
 });
 
 // app.use("/stock", authAdmin, stockRouter);
-app.use("/products", productsRouter);
-app.use("/inventoryItems", inventoryItemsRouter);
-app.use("/orders", ordersRouter);
-app.use("/productCategories", productCategoriesRouter);
+app.use("/products", express.json(), productsRouter);
+app.use("/inventoryItems", express.json(), inventoryItemsRouter);
+app.use("/orders", express.json(), ordersRouter);
+app.use("/productCategories", express.json(), productCategoriesRouter);
+app.use("/payments", paymentsRouter);
