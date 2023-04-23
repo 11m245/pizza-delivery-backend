@@ -201,7 +201,7 @@ router.post(
         } catch (error) {
           // If there is an error send it to the client
           // res.status(500).json({ error: e.message });
-          // console.log("Payment Session Creation Error", error.message);
+          console.log("Payment Session Creation Error", error);
           response.status(500).send({
             message: "Payment Session Creation Error",
             payload: { url: session.url },
