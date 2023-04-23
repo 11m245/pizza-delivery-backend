@@ -34,7 +34,7 @@ const PORT = process.env.PORT;
 // app.use(express.json());
 app.use(cors());
 // app.use(cors({ origin: process.env.API_CLIENT, credentials: true }));
-
+//m,
 //mongo connection
 
 const MONGO_URL = process.env.MONGO_URL;
