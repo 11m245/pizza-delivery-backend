@@ -49,34 +49,38 @@ router.post(
     }
 
     // Handle the event
-    switch (event.type) {
-      case "checkout.session.completed":
-        const checkOutCompleted = event.data.object;
-        // console.log("checkOutCompleted obj", checkOutCompleted);
-        const {
-          id: checkOutSessionId,
-          amount_total: paidAmount,
-          created: updatedAt,
-          status: sessionStatus,
-          payment_status: paymentStatus,
-          payment_intent: paymentIntent,
-        } = checkOutCompleted;
-        const { userIdString, orderIdString } = checkOutCompleted.metadata;
+    try {
+      switch (event.type) {
+        case "checkout.session.completed":
+          const checkOutCompleted = event.data.object;
+          // console.log("checkOutCompleted obj", checkOutCompleted);
+          const {
+            id: checkOutSessionId,
+            amount_total: paidAmount,
+            created: updatedAt,
+            status: sessionStatus,
+            payment_status: paymentStatus,
+            payment_intent: paymentIntent,
+          } = checkOutCompleted;
+          const { userIdString, orderIdString } = checkOutCompleted.metadata;
 
-        await updateOrderPaymentStatus({
-          userIdString,
-          orderIdString,
-          checkOutSessionId,
-          paidAmount: paidAmount / 100,
-          updatedAt,
-          sessionStatus,
-          paymentStatus,
-          paymentIntent,
-        });
-        break;
-      // ... handle other event types
-      default:
-        console.log(`Unhandled event type ${event.type}`);
+          await updateOrderPaymentStatus({
+            userIdString,
+            orderIdString,
+            checkOutSessionId,
+            paidAmount: paidAmount / 100,
+            updatedAt,
+            sessionStatus,
+            paymentStatus,
+            paymentIntent,
+          });
+          break;
+        // ... handle other event types
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+    } catch (err) {
+      console.log("error in webhook", err);
     }
 
     // Return a 200 response to acknowledge receipt of the event
